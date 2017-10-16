@@ -1,6 +1,7 @@
 # bookmark2md
 
-    将 Chrome 导出的书签 html 文件转换为 md 文件
+    A script for converting Chrome bookmarks to Markdown files
+    
 
 ## Use
 ```bash
