@@ -1,0 +1,23 @@
+{
+	"description": {
+		"message": "A script for converting Chrome bookmarks to Markdown files"
+	},
+	"popup_title": {
+		"message": "Bookmark2md"
+	},
+	"popup_menu_item_export": {
+		"message": "Export"
+	},
+	"export_title": {
+		"message": "Options"
+	},
+	"export_config_unless_label": {
+		"message": "unless"
+	},
+	"export_config_unless_placeholder": {
+		"message": "Please enter directory name, please use commas for multiple directories"
+	},
+	"export_submit": {
+		"message": "EXPORT"
+	}
+}

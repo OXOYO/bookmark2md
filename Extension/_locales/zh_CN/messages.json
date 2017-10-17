@@ -1,0 +1,23 @@
+{
+	"description": {
+		"message": "将Chrome书签按目录导出为Markdown文件"
+	},
+	"popup_title": {
+		"message": "Bookmark2md"
+	},
+	"popup_menu_item_export": {
+		"message": "导出"
+	},
+	"export_title": {
+		"message": "配置"
+	},
+	"export_config_unless_label": {
+		"message": "排除目录"
+	},
+	"export_config_unless_placeholder": {
+		"message": "请输入目录名，多个目录请用英文逗号分割"
+	},
+	"export_submit": {
+		"message": "导出"
+	}
+}
