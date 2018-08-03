@@ -15,13 +15,13 @@
     "default_popup": "html/popup.html"
   },
   "author": "OXOYO",
-  "background": {
-    // 2种指定方式，如果指定JS，那么会自动生成一个背景页
-    "page": "html/background.html",
-    //"scripts": ["js/background.js"],
-    // Recommended
-    "persistent": false
-  },
+//  "background": {
+//    // 2种指定方式，如果指定JS，那么会自动生成一个背景页
+//    "page": "html/background.html",
+//    //"scripts": ["js/background.js"],
+//    // Recommended
+//    "persistent": false
+//  },
   // 权限申请
   "permissions": [
     {
@@ -32,13 +32,30 @@
       ]
     },
     "bookmarks",
-    "contextMenus", // 右键菜单
-    "tabs", // 标签
-    "notifications", // 通知
-    "webRequestBlocking", // 阻塞式web请求
-    "storage", // 插件本地存储
-    "http://*/*", // 可以通过executeScript或者insertCSS访问的网站
-    "https://*/*" // 可以通过executeScript或者insertCSS访问的网站
+    "notifications",
+    "tabs",
+    "https://github.com/",
+    "storage"
   ],
-  "homepage_url": "https://github.com/OXOYO/bookmark2md"
+  "homepage_url": "https://github.com/OXOYO/bookmark2md",
+  "content_scripts": [
+    {
+      "matches": ["https://github.com/robots.txt*"],
+      "js": ["lib/oauth2/oauth2_inject.js"],
+      "run_at": "document_start"
+    }
+  ],
+  // 选项页 Chrome < 40
+  "options_page": "html/options.html",
+  // 选项页 Chrome > 40
+  "options_ui": {
+    "page": "html/options.html",
+    // 添加一些默认的样式，推荐使用
+    "chrome_style": false
+  },
+  // 默认语言
+  "default_locale": "zh_CN",
+  "web_accessible_resources": [
+    "lib/oauth2/oauth2.html"
+  ]
 }

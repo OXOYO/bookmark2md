@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Bookmark2md-popup</title>
+  <link rel="stylesheet" href="../lib/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/options.css">
+</head>
+<body class="main" id="options">
+  <div class="options-box options-login">
+    <div class="login-block">
+      <form>
+        <div class="form-group">
+          <input type="text" class="form-control" id="username" placeholder="username">
+          <small class="form-text text-muted">Enter your github username.</small>
+        </div>
+        <div class="form-group">
+          <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+          <small class="form-text text-muted">Enter your github password.</small>
+        </div>
+        <button id="login" type="button" class="btn btn-success">Login</button>
+      </form>
+    </div>
+    <div class="logout-block">
+      <h2><a target="_blank" id="github-user"></a></h2>
+      <button id="logout" type="button" class="btn btn-danger">Logout</button>
+    </div>
+  </div>
+  <script src="../lib/jquery.min.js"></script>
+  <script src="../lib/bootstrap/js/bootstrap.js"></script>
+  <script src="../lib/oauth2/oauth2.js"></script>
+  <script src="../lib/oauth2/adapters/github.js"></script>
+  <script src="../scripts/options.js"></script>
+</body>
+</html>

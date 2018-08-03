@@ -1,0 +1,18 @@
+
+.options-box {
+  width: 360px;
+  margin: 20px auto;
+}
+
+.options-box .logout-block {
+  display: none;
+}
+
+.authorized .login-block {
+  display: none;
+}
+
+.btn,
+.btn:hover {
+  background-image: none;
+}

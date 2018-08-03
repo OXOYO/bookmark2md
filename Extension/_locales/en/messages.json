@@ -1,6 +1,6 @@
 {
 	"description": {
-		"message": "A script for converting Chrome bookmarks to Markdown files"
+		"message": "A plugin for converting Chrome bookmarks to Markdown files"
 	},
 	"popup_title": {
 		"message": "Bookmark2md"

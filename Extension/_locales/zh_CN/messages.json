@@ -1,6 +1,6 @@
 {
 	"description": {
-		"message": "将Chrome书签按目录导出为Markdown文件"
+		"message": "一个将Chrome书签按目录导出为Markdown文件的插件"
 	},
 	"popup_title": {
 		"message": "Bookmark2md"
