@@ -12,6 +12,7 @@
 <body class="main" id="options">
   <div class="options-box options-login">
     <div class="login-block">
+      <!--
       <form>
         <div class="form-group">
           <input type="text" class="form-control" id="username" placeholder="username">
@@ -23,16 +24,32 @@
         </div>
         <button id="login" type="button" class="btn btn-success">Login</button>
       </form>
+      -->
+      <button id="login" type="button" class="btn btn-success login-btn">通过 Github 登录</button>
     </div>
     <div class="logout-block">
-      <h2><a target="_blank" id="github-user"></a></h2>
-      <button id="logout" type="button" class="btn btn-danger">Logout</button>
+      <div class="user-info">
+        <div class="user-avatar">
+          <img id="user-avatar" src="" alt="">
+        </div>
+        <div class="user-name">
+          <a id="user-name" href="" target="_blank"></a>
+        </div>
+        <button id="logout" type="button" class="btn btn-danger logout-btn">Logout</button>
+      </div>
+      <form class="form-horizontal">
+        <div class="form-group">
+          <label for="repo-list">repo</label>
+          <select id="repo-list" class="form-control repo-list"></select>
+        </div>
+      </form>
+      <button id="push" type="button" class="btn btn-primary push-btn">push</button>
     </div>
   </div>
   <script src="../lib/jquery.min.js"></script>
   <script src="../lib/bootstrap/js/bootstrap.js"></script>
   <script src="../lib/oauth2/oauth2.js"></script>
-  <script src="../lib/oauth2/adapters/github.js"></script>
+  <!--<script src="../lib/oauth2/adapters/github.js"></script>-->
   <script src="../scripts/options.js"></script>
 </body>
 </html>

@@ -1,15 +1,61 @@
 
 .options-box {
-  width: 360px;
-  margin: 20px auto;
+  width: 560px;
+  margin: 20px;
+}
+
+.options-box .login-block {
+  width: 100%;
+  display: inline-block;
 }
 
 .options-box .logout-block {
+  width: 100%;
   display: none;
 }
 
 .authorized .login-block {
   display: none;
+}
+
+.authorized .logout-block {
+  display: inline-block;
+}
+
+.login-block {
+  text-align: center;
+}
+
+.login-block .login-btn {
+  margin: 0 auto;
+}
+
+.logout-block .logout-btn {
+  float: right;
+  margin-top: 9px;
+}
+
+.user-info {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e1e4e8;
+}
+
+.user-info .user-avatar {
+  display: inline-block;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  vertical-align: middle;
+}
+
+.user-info .user-avatar img {
+  width: 100%;
+  height: 100%;
+}
+
+.user-info .user-name {
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .btn,

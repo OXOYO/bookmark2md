@@ -226,6 +226,7 @@ OAuth2.prototype.finishAuth = function() {
   }
 
   that.getAccessAndRefreshTokens(authorizationCode, function(response) {
+    console.log('response', response)
     var data = that.get();
     data.accessTokenDate = new Date().valueOf();
 
@@ -350,7 +351,7 @@ OAuth2.loadAdapter = function(adapterName, callback) {
   var head = document.querySelector('head');
   var script = document.createElement('script');
   script.type = 'text/javascript';
-  script.src = '/oauth2/adapters/' + adapterName + '.js';
+  script.src = '/lib/oauth2/adapters/' + adapterName + '.js';
   script.addEventListener('load', function() {
     callback();
   });

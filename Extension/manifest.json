@@ -35,7 +35,9 @@
     "notifications",
     "tabs",
     "https://github.com/",
-    "storage"
+    "storage",
+    "activeTab",
+    "identity"
   ],
   "homepage_url": "https://github.com/OXOYO/bookmark2md",
   "content_scripts": [
