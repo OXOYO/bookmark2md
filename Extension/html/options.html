@@ -12,19 +12,6 @@
 <body class="main" id="options">
   <div class="options-box options-login">
     <div class="login-block">
-      <!--
-      <form>
-        <div class="form-group">
-          <input type="text" class="form-control" id="username" placeholder="username">
-          <small class="form-text text-muted">Enter your github username.</small>
-        </div>
-        <div class="form-group">
-          <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
-          <small class="form-text text-muted">Enter your github password.</small>
-        </div>
-        <button id="login" type="button" class="btn btn-success">Login</button>
-      </form>
-      -->
       <button id="login" type="button" class="btn btn-success login-btn">通过 Github 登录</button>
     </div>
     <div class="logout-block">
@@ -36,6 +23,7 @@
           <a id="user-name" href="" target="_blank"></a>
         </div>
         <button id="logout" type="button" class="btn btn-danger logout-btn">Logout</button>
+        <button id="refresh" type="button" class="btn btn-default refresh-btn">Refresh</button>
       </div>
       <form class="form-horizontal">
         <div class="form-group">
@@ -43,13 +31,23 @@
           <select id="repo-list" class="form-control repo-list"></select>
         </div>
       </form>
+      <div id="console"></div>
       <button id="push" type="button" class="btn btn-primary push-btn">push</button>
+      <button id="bookmarks" type="button" class="btn btn-primary">bookmarks</button>
     </div>
   </div>
+  <div id="loading" class="loading">
+    <div class="mask"></div>
+    <div class="lds-ripple">
+      <div></div>
+      <div></div>
+    </div>
+  </div>
+  <div id="notice" class="notice"></div>
   <script src="../lib/jquery.min.js"></script>
   <script src="../lib/bootstrap/js/bootstrap.js"></script>
   <script src="../lib/oauth2/oauth2.js"></script>
-  <!--<script src="../lib/oauth2/adapters/github.js"></script>-->
+  <script src="../scripts/bookmark2md.js"></script>
   <script src="../scripts/options.js"></script>
 </body>
 </html>
