@@ -5,13 +5,11 @@ var bookmark2md = {}
 
 const lineBreak = '\n\n'
 
-bookmark2md.getBookmarks = function () {
-  let bookmarks = []
+bookmark2md.getBookmarks = function (callback) {
   chrome.bookmarks.getTree(function (res) {
     console.log('bookmarks', res)
-    bookmarks = res
+    callback(res)
   })
-  return bookmarks
 }
 
 bookmark2md.html2Escape = function (str) {
@@ -61,34 +59,124 @@ bookmark2md.formatDate = (time, fmt = 'yyyy-MM-dd hh:mm') => {
   return doFormatDate(date, fmt)
 }
 
-bookmark2md.transfer = function (filter) {
-  let bookmarks = bookmark2md.getBookmarks()
-  let fileMap = {}
-  let findDir = function (item) {
-    return item.hasOwnProperty('children')
-  }
-
-  // let level = 0
-  let handler = function (children, parentId) {
-    let content = children.map(item => {
-      // dir
-      if (findDir(item)) {
-        if (!Object.keys(fileMap).includes(item.id)) {
-          fileMap[item.id] = {
-            ...item
+bookmark2md.transfer = function (exclusion, maxLevel, callback) {
+  let rootID = '-1'
+  let rootTitle = 'README'
+  exclusion = exclusion.split(',').filter(item => !!item.trim())
+  bookmark2md.getBookmarks(function (bookmarks) {
+    let dirMap = {
+      [rootID]: {
+        content: [],
+        dateAdded: '',
+        id: rootID,
+        title: rootTitle
+      }
+    }
+    let findDir = function (item) {
+      return item.hasOwnProperty('children')
+    }
+    let getSize = function (count) {
+      let arr = new Array(count > 6 ? 6 : count).fill('#')
+      return arr.join('') + ' '
+    }
+    let handler = function (children, parentIdArr, parentTile, level) {
+      for (let childIndex = 0, childrenLen = children.length; childIndex < childrenLen; childIndex++) {
+        let item = children[childIndex]
+        // dir
+        if (findDir(item)) {
+          if (!item.title) {
+            console.log('item.title', item)
+          }
+          if (!(exclusion.length && item.title && exclusion.includes(item.title))) {
+            if (!Object.keys(dirMap).includes(item.id) && item.title) {
+              // if (level <= maxLevel || maxLevel === 0) {
+                dirMap[item.id] = {
+                  ...item,
+                  content: []
+                }
+                dirMap[item.id]['content'].push('# ' + item.title + lineBreak)
+                delete dirMap[item.id]['children']
+                parentIdArr = [
+                  ...parentIdArr,
+                  item.id
+                ]
+                handler(item.children, parentIdArr, item.title, ++level)
+              // } else {
+              //   parentIdArr.slice(0, level + 1)
+              //   level = 0
+              // }
+            }
           }
         }
-        // 处理 content
-        fileMap[item.id]['content'] = handler(item.children, item.id)
-        return item
-      } else {
-        // file
-        return bookmark2md.formatDate(item.dateAdded) + ' [' + bookmark2md.html2Escape(item.title) + '](' + item.url + ')' + lineBreak
+        /*
+        else {
+          // file
+          let lastParentId
+          let len = parentIdArr.length
+          parentIdArr.map((parentId, index) => {
+            let parentIndex = children.findIndex(child => child.parentId === item.parentId)
+            if (!dirMap[parentId] && !lastParentId) {
+              for (let i = 0, id; i< len; i++) {
+                id = parentIdArr[i]
+                if (dirMap[id]) {
+                  lastParentId = id
+                } else {
+                  break
+                }
+              }
+              parentId = lastParentId
+            }
+            if(parentIndex === 0 && parentIdArr.indexOf(parentId) !== parentIdArr.length - 1) {
+              dirMap[parentId]['content'].push(getSize(parentIdArr.length) + ' ' + parentTile + lineBreak)
+            }
+            dirMap[parentId]['content'].push(
+              bookmark2md.formatDate(item.dateAdded) +
+              ' [' +
+              bookmark2md.html2Escape(item.title) +
+              '](' +
+              item.url + ')' +
+              lineBreak
+            )
+          })
+        }
+        */
+      }
+    }
+    if (!bookmarks[0]['title']) {
+      bookmarks[0]['title'] = rootTitle
+    }
+    handler(bookmarks, [rootID], rootTitle, 0)
+    console.log('dirMap', Object.keys(dirMap).length, dirMap)
+    let dirTitleArr = []
+    Object.keys(dirMap).map(dirId => {
+      let item = dirMap[dirId]
+      dirTitleArr.push(item.title)
+      if (dirId === rootID || (dirId !== rootID && item.title)) {
+        let file = item.content.join('')
+        callback(item.title, file)
       }
     })
-    // level++
-  }
-  handler(bookmarks, -1)
+    let firstLevelDir = []
+    bookmarks[0]['children'][0]['children'].map(item => {
+      firstLevelDir.push(item.title)
+    })
+    let dirTitleArrNotInclude = []
+    firstLevelDir.map(dir => {
+      if (!dirTitleArr.includes(dir)) {
+        dirTitleArrNotInclude.push(dir)
+      }
+    })
+    let firstLevelDirNotInclude = []
+    dirTitleArr.map(dir => {
+      if (!firstLevelDir.includes(dir)) {
+        firstLevelDirNotInclude.push(dir)
+      }
+    })
+    console.log('dirTitleArr', dirTitleArr.length, dirTitleArr.sort().join(','))
+    console.log('firstLevelDir', firstLevelDir.length, firstLevelDir.sort().join(','))
+    console.log('dirTitleArrNotInclude', dirTitleArrNotInclude.length, dirTitleArrNotInclude.sort().join(','))
+    console.log('firstLevelDirNotInclude', firstLevelDirNotInclude.length, firstLevelDirNotInclude.sort().join(','))
+  })
 }
 
 bookmark2md.filterBookmarks = function (bookmarks) {

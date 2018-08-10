@@ -126,7 +126,11 @@ function putContent () {
 }
 
 function doPush () {
-  bookmark2md.transfer()
+  let exclusion = $('#exclusion').val().trim()
+  let maxLevel = parseInt($('#maxLevel').val()) || 0
+  bookmark2md.transfer(exclusion, maxLevel, function (fileName, fileContent) {
+
+  })
 }
 
 function showLoading () {

@@ -30,6 +30,16 @@
           <label for="repo-list">repo</label>
           <select id="repo-list" class="form-control repo-list"></select>
         </div>
+        <div class="form-group">
+          <label for="exclusion">exclusion</label>
+          <!-- 请输入排除目录名称，多个请用英文逗号分隔 -->
+          <input id="exclusion" type="text" class="form-control exclusion" placeholder="Please enter the exclusion directory name, multiple separated by comm">
+        </div>
+        <div class="form-group">
+          <label for="maxLevel">max level</label>
+          <!-- 请输入排除目录名称，多个请用英文逗号分隔 -->
+          <input id="maxLevel" type="number" class="form-control maxLevel" value="1" min="0">
+        </div>
       </form>
       <div id="console"></div>
       <button id="push" type="button" class="btn btn-primary push-btn">push</button>
