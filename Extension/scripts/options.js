@@ -13,20 +13,16 @@ function authorize() {
 }
 
 function clearAuthorized() {
-  console.log('clear')
   Bookmark2Github.clearAccessToken()
   checkAuthorized()
 }
 
 function checkAuthorized() {
   hideNotice()
-  console.log('checkAuthorized');
-  console.log('provider.hasAccessToken()', Bookmark2Github, Bookmark2Github.hasAccessToken())
   if (Bookmark2Github.hasAccessToken()) {
     $('#options').addClass('authorized')
     // 获取访问token
     Bookmark2Github.access_token = Bookmark2Github.getAccessToken()
-    $('#console').html(Bookmark2Github.access_token)
     // 获取用户信息
     getUserInfo()
   } else {
@@ -36,7 +32,7 @@ function checkAuthorized() {
 
 function getUserInfo () {
   let url = `https://api.github.com/user`
-  showLoading()
+  showLoading('Loading user info...')
   $.ajax({
     type: 'GET',
     url: url,
@@ -46,23 +42,21 @@ function getUserInfo () {
     success: function (res) {
       hideLoading()
       Bookmark2Github.userInfo = res
-      console.log('userInfo', res)
       $('#user-avatar').attr('src', res.avatar_url)
       $('#user-name').html(res.login)
       $('#user-name').attr('href', res.html_url)
       getUserRepos(res)
     },
     error: function (jqXHR) {
-      console.log('getUserInfo jqXHR', jqXHR)
       hideLoading()
-      showNotice(jqXHR.responseText, 'error')
+      showNotice(jqXHR.responseJSON.message || jqXHR.responseText, 'error')
     }
   })
 }
 
 function getUserRepos (userInfo, page = 1) {
   let url = `${ userInfo.repos_url }?per_page=100&page=${ page }`
-  showLoading()
+  showLoading('Loading user repos...')
   $.ajax({
     type: 'GET',
     url: url,
@@ -72,7 +66,6 @@ function getUserRepos (userInfo, page = 1) {
     success: function (res) {
       hideLoading()
       Bookmark2Github.userRepos = res
-      console.log('userRepos', res)
       let repoList = []
       res.map(item => {
         repoList.push(`<option value="${ item.name }">${ item.name }</option>`)
@@ -80,30 +73,58 @@ function getUserRepos (userInfo, page = 1) {
       $('#repo-list').html(repoList.join(''))
     },
     error: function (jqXHR) {
-      console.log('getUserRepos jqXHR', jqXHR)
       hideLoading()
-      showNotice(jqXHR.responseText, 'error')
+      showNotice(jqXHR.responseJSON.message || jqXHR.responseText, 'error')
     }
   })
 }
 
-function putContent () {
+function getContent (fileName, fileContent, callback) {
   let owner = Bookmark2Github.userInfo.login
   let repo = $('#repo-list option:selected').val()
-  let path = new Date().getTime() + '.txt'
-  // let path = '001.txt'
+  let path = fileName + '.md'
   let url = `https://api.github.com/repos/${ owner }/${ repo }/contents/${ path }`
-          // https://api.github.com/repos/oxoyo/bookmark-hub/contents/003.txt
+  $.ajax({
+    type: 'GET',
+    url: url,
+    contentType: 'application/json',
+    headers: {
+      Authorization: `token ${Bookmark2Github.access_token}`
+    },
+    dataType: 'json',
+    success: function(res){
+      callback(fileName, fileContent, res.sha || null)
+    },
+    error: function (jqXHR) {
+      if (jqXHR.status === 404) {
+        callback(fileName, fileContent, null)
+      } else {
+        hideLoading()
+      }
+      showNotice(jqXHR.responseJSON.message || jqXHR.responseText, 'error')
+    }
+  })
+}
+
+function putContent (fileName, fileContent, sha) {
+  let owner = Bookmark2Github.userInfo.login
+  let repo = $('#repo-list option:selected').val()
+  let msg = $('#commitMessage').val()
+  let path = fileName + '.md'
+  let url = `https://api.github.com/repos/${ owner }/${ repo }/contents/${ path }`
   let data = {
-    message: 'my commit message',
+    message: msg,
     committer: {
       name: Bookmark2Github.userInfo.name,
       email: Bookmark2Github.userInfo.email
     },
     branch: 'master',
-    content: ''
+    content: Base64.encode(fileContent)
   }
-  showLoading()
+  if (sha) {
+    data['sha'] = sha
+  }
+  showLoading('push to github...')
   $.ajax({
     type: 'PUT',
     url: url,
@@ -115,29 +136,33 @@ function putContent () {
     data: JSON.stringify(data),
     success: function(res){
       hideLoading()
-      showNotice('push success', 'success')
+      showNotice(`push ${ path } success`, 'success')
     },
     error: function (jqXHR) {
-      console.log('putContent jqXHR', jqXHR)
       hideLoading()
-      showNotice(jqXHR.responseText, 'error')
+      showNotice(jqXHR.responseJSON.message || jqXHR.responseText, 'error')
     }
   })
 }
 
 function doPush () {
+  showLoading()
   let exclusion = $('#exclusion').val().trim()
   let maxLevel = parseInt($('#maxLevel').val()) || 0
   bookmark2md.transfer(exclusion, maxLevel, function (fileName, fileContent) {
-
+    getContent(fileName, fileContent, putContent)
   })
 }
 
-function showLoading () {
+function showLoading (msg) {
   $('#loading').show()
+  if (msg) {
+    $('#loadingMsg').html(msg)
+  }
 }
 function hideLoading () {
   $('#loading').hide()
+  $('#loadingMsg').empty()
 }
 
 function showNotice (content, type) {
@@ -147,14 +172,12 @@ function showNotice (content, type) {
     info: 'notice-info',
   }
   content = content || type
-  Object.values(val => {
-    $('#notice').removeClass(val)
-  })
+  $('#notice').removeClass(Object.values(defType).join(' '))
   $('#notice').html(content).show()
   $('#notice').addClass(defType[type])
 }
 function hideNotice () {
-  $('#notice').empty().show()
+  $('#notice').empty().hide()
 }
 
 function init () {
@@ -163,11 +186,9 @@ function init () {
     authorize()
   })
   $('#logout').click(function () {
-    console.log('do logout')
     clearAuthorized()
   })
   $('#push').click(function () {
-    console.log('do push')
     doPush()
   })
   $('#bookmarks').click(function () {

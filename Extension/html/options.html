@@ -33,17 +33,19 @@
         <div class="form-group">
           <label for="exclusion">exclusion</label>
           <!-- 请输入排除目录名称，多个请用英文逗号分隔 -->
-          <input id="exclusion" type="text" class="form-control exclusion" placeholder="Please enter the exclusion directory name, multiple separated by comm">
+          <input id="exclusion" type="text" class="form-control exclusion" autocomplete="on" placeholder="Please enter the exclusion directory name, multiple separated by comm">
         </div>
         <div class="form-group">
           <label for="maxLevel">max level</label>
-          <!-- 请输入排除目录名称，多个请用英文逗号分隔 -->
-          <input id="maxLevel" type="number" class="form-control maxLevel" value="1" min="0">
+          <input id="maxLevel" type="number" class="form-control maxLevel" value="3" min="1">
+        </div>
+        <div class="form-group">
+          <label for="commitMessage">commit message</label>
+          <input id="commitMessage" type="text" class="form-control commitMessage" value="Update." autocomplete="on">
         </div>
       </form>
-      <div id="console"></div>
       <button id="push" type="button" class="btn btn-primary push-btn">push</button>
-      <button id="bookmarks" type="button" class="btn btn-primary">bookmarks</button>
+      <!--<button id="bookmarks" type="button" class="btn btn-primary">bookmarks</button>-->
     </div>
   </div>
   <div id="loading" class="loading">
@@ -52,11 +54,13 @@
       <div></div>
       <div></div>
     </div>
+    <div id="loadingMsg" class="loading-msg"></div>
   </div>
   <div id="notice" class="notice"></div>
   <script src="../lib/jquery.min.js"></script>
   <script src="../lib/bootstrap/js/bootstrap.js"></script>
   <script src="../lib/oauth2/oauth2.js"></script>
+  <script src="../lib/base64.js"></script>
   <script src="../scripts/bookmark2md.js"></script>
   <script src="../scripts/options.js"></script>
 </body>

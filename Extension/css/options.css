@@ -63,6 +63,11 @@
   vertical-align: middle;
 }
 
+.repo-list option {
+  height: 32px;
+  line-height: 32px;
+}
+
 .btn,
 .btn:hover {
   background-image: none;
@@ -85,6 +90,20 @@
   right: 0;
   background-color: rgba(55, 55, 55, 0.6);
   height: 100%;
+}
+
+.loading-msg {
+  display: inline-block;
+  position: absolute;
+  width: 200px;
+  height: 30px;
+  line-height: 30px;
+  top: 50%;
+  left: 50%;
+  margin-left: -100px;
+  margin-top: 40px;
+  color: #fff;
+  text-align: center;
 }
 
 .lds-ripple {

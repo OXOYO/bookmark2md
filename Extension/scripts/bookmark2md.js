@@ -7,7 +7,6 @@ const lineBreak = '\n\n'
 
 bookmark2md.getBookmarks = function (callback) {
   chrome.bookmarks.getTree(function (res) {
-    console.log('bookmarks', res)
     callback(res)
   })
 }
@@ -60,10 +59,10 @@ bookmark2md.formatDate = (time, fmt = 'yyyy-MM-dd hh:mm') => {
 }
 
 bookmark2md.transfer = function (exclusion, maxLevel, callback) {
-  let rootID = '-1'
-  let rootTitle = 'README'
-  exclusion = exclusion.split(',').filter(item => !!item.trim())
   bookmark2md.getBookmarks(function (bookmarks) {
+    let rootID = '-1'
+    let rootTitle = 'README'
+    let level = 1
     let dirMap = {
       [rootID]: {
         content: [],
@@ -73,53 +72,43 @@ bookmark2md.transfer = function (exclusion, maxLevel, callback) {
         level: 0
       }
     }
-    let findDir = function (item) {
-      return item.hasOwnProperty('children')
-    }
     let getSize = function (count) {
       let arr = new Array(count > 6 ? 6 : count).fill('#')
       return arr.join('') + ' '
     }
+    exclusion = exclusion.split(',').filter(item => !!item.trim())
+    if (!bookmarks[0]['title']) {
+      bookmarks[0]['title'] = rootTitle
+    }
     let handler = function (children, parentIdArr, parentTile, level) {
-      for (let childIndex = 0, childrenLen = children.length, dirLen = 0; childIndex < childrenLen; childIndex++) {
-        if (dirLen === childrenLen) {
-          level = 0
-          parentIdArr = [rootID]
-        }
-        let item = children[childIndex]
-        // dir
-        if (findDir(item)) {
-          dirLen = dirLen + 1
-          if (!item.title) {
-            console.log('item.title', item)
-          }
+      let fileLen = 0
+      let childrenLen = children.length
+      children.map(item => {
+        let tmpParentIdArr = [...parentIdArr]
+        if (item.hasOwnProperty('children')) {
           if (item.title && !exclusion.includes(item.title)) {
-            if (!Object.keys(dirMap).includes(item.id) && item.title) {
-                dirMap[item.id] = {
-                  ...item,
-                  content: [],
-                  level: level
-                }
-                dirMap[item.id]['content'].push('# ' + item.title + lineBreak)
-                delete dirMap[item.id]['children']
-                parentIdArr = [
-                  ...parentIdArr,
-                  item.id
-                ]
-                handler(item.children, parentIdArr, item.title, ++level)
+            if (!Object.keys(dirMap).includes(item.id)) {
+              dirMap[item.id] = {
+                ...item,
+                content: [],
+                level: level,
+                parentIdArrLen: tmpParentIdArr.length
+              }
+              dirMap[item.id]['content'].push('# ' + item.title + lineBreak)
+              delete dirMap[item.id]['children']
+              tmpParentIdArr.push(item.id)
             }
+            handler(item.children, [...tmpParentIdArr], item.title, level + 1)
           }
-        }
-        /*
-        else {
+        } else {
+          fileLen++
           // file
           let lastParentId
-          let len = parentIdArr.length
-          parentIdArr.map((parentId, index) => {
-            let parentIndex = children.findIndex(child => child.parentId === item.parentId)
-            if (!dirMap[parentId] && !lastParentId) {
-              for (let i = 0, id; i< len; i++) {
-                id = parentIdArr[i]
+          let parentLength = tmpParentIdArr.length
+          tmpParentIdArr.map((parentId, index) => {
+            if (!dirMap[parentId]) {
+              for (let i = 0, id; i< parentLength; i++) {
+                id = tmpParentIdArr[i]
                 if (dirMap[id]) {
                   lastParentId = id
                 } else {
@@ -128,73 +117,45 @@ bookmark2md.transfer = function (exclusion, maxLevel, callback) {
               }
               parentId = lastParentId
             }
-            if(parentIndex === 0 && parentIdArr.indexOf(parentId) !== parentIdArr.length - 1) {
-              dirMap[parentId]['content'].push(getSize(parentIdArr.length) + ' ' + parentTile + lineBreak)
+
+            if (parentId) {
+              if(fileLen === 1 && tmpParentIdArr.indexOf(parentId) !== parentLength - 1) {
+                dirMap[parentId]['content'].push(getSize(parentLength) + ' ' + parentTile + ' ' + lineBreak)
+              }
+              dirMap[parentId]['content'].push(
+                bookmark2md.formatDate(item.dateAdded) +
+                ' [' +
+                bookmark2md.html2Escape(item.title) +
+                '](' +
+                item.url + ')' +
+                lineBreak
+              )
+              if (fileLen === childrenLen) {
+                dirMap[parentId]['content'].push(lineBreak)
+              }
             }
-            dirMap[parentId]['content'].push(
-              bookmark2md.formatDate(item.dateAdded) +
-              ' [' +
-              bookmark2md.html2Escape(item.title) +
-              '](' +
-              item.url + ')' +
-              lineBreak
-            )
           })
         }
-        */
-      }
+        if (fileLen === childrenLen) {
+          fileLen = 0
+          level = 0
+          parentIdArr = [rootID]
+        }
+      })
     }
-    if (!bookmarks[0]['title']) {
-      bookmarks[0]['title'] = rootTitle
-    }
-    handler(bookmarks, [rootID], rootTitle, 1)
-    console.log('dirMap', Object.keys(dirMap).length, dirMap)
-    let dirTitleArr = []
+    handler(bookmarks, [rootID], rootTitle, level)
+
     Object.keys(dirMap).map(dirId => {
       let item = dirMap[dirId]
-      dirTitleArr.push(item.title)
-      console.log(item.level, item.title)
-      if (dirId === rootID || (dirId !== rootID && item.title)) {
-        let file = item.content.join('')
-        callback(item.title, file)
+      if (item.level <= maxLevel) {
+        if (dirId === rootID || (dirId !== rootID && item.title)) {
+          let file = ''
+          if (item.content && item.content instanceof Array) {
+            file = item.content.join('')
+          }
+          callback(item.title, file)
+        }
       }
     })
-    let firstLevelDir = []
-    bookmarks[0]['children'][0]['children'].map(item => {
-      firstLevelDir.push(item.title)
-    })
-    let dirTitleArrNotInclude = []
-    firstLevelDir.map(dir => {
-      if (!dirTitleArr.includes(dir)) {
-        dirTitleArrNotInclude.push(dir)
-      }
-    })
-    let firstLevelDirNotInclude = []
-    dirTitleArr.map(dir => {
-      if (!firstLevelDir.includes(dir)) {
-        firstLevelDirNotInclude.push(dir)
-      }
-    })
-    console.log('dirTitleArr', dirTitleArr.length, dirTitleArr.sort().join(','))
-    console.log('firstLevelDir', firstLevelDir.length, firstLevelDir.sort().join(','))
-    console.log('dirTitleArrNotInclude', dirTitleArrNotInclude.length, dirTitleArrNotInclude.sort().join(','))
-    console.log('firstLevelDirNotInclude', firstLevelDirNotInclude.length, firstLevelDirNotInclude.sort().join(','))
-  })
-}
-
-bookmark2md.filterBookmarks = function (bookmarks) {
-
-  let handler = function (item) {
-
-  }
-  let level = 1
-  bookmarks.map(item => {
-    // dir
-    if (findDir(item)) {
-
-    } else {
-      // file
-
-    }
   })
 }

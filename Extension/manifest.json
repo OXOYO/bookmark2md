@@ -12,16 +12,9 @@
   "browser_action": {
     "default_icon": "img/icon.png",
     "default_title": "Bookmark2md",
-    "default_popup": "html/popup.html"
+    "default_popup": "html/options.html"
   },
   "author": "OXOYO",
-//  "background": {
-//    // 2种指定方式，如果指定JS，那么会自动生成一个背景页
-//    "page": "html/background.html",
-//    //"scripts": ["js/background.js"],
-//    // Recommended
-//    "persistent": false
-//  },
   // 权限申请
   "permissions": [
     {
