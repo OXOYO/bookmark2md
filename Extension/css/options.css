@@ -42,6 +42,7 @@
 
 .user-info {
   padding-bottom: 10px;
+  margin-bottom: 10px;
   border-bottom: 1px solid #e1e4e8;
 }
 
@@ -66,6 +67,19 @@
 .repo-list option {
   height: 32px;
   line-height: 32px;
+}
+
+.control-label {
+  width: 140px;
+  text-align: right;
+}
+.form-control {
+  width: calc(100% - 150px);
+  float: right;
+}
+
+.push-btn {
+  margin-left: 150px;
 }
 
 .btn,

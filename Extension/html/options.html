@@ -12,7 +12,7 @@
 <body class="main" id="options">
   <div class="options-box options-login">
     <div class="login-block">
-      <button id="login" type="button" class="btn btn-success login-btn">通过 Github 登录</button>
+      <button id="login" type="button" class="btn btn-success login-btn">Sign in with GitHub</button>
     </div>
     <div class="logout-block">
       <div class="user-info">
@@ -27,20 +27,23 @@
       </div>
       <form class="form-horizontal">
         <div class="form-group">
-          <label for="repo-list">repo</label>
+          <label for="repo-list" class="control-label">repo</label>
           <select id="repo-list" class="form-control repo-list"></select>
         </div>
         <div class="form-group">
-          <label for="exclusion">exclusion</label>
-          <!-- 请输入排除目录名称，多个请用英文逗号分隔 -->
+          <label for="branch-list" class="control-label">branch</label>
+          <select id="branch-list" class="form-control branch-list"></select>
+        </div>
+        <div class="form-group">
+          <label for="exclusion" class="control-label">exclusion</label>
           <input id="exclusion" type="text" class="form-control exclusion" autocomplete="on" placeholder="Please enter the exclusion directory name, multiple separated by comm">
         </div>
         <div class="form-group">
-          <label for="maxLevel">max level</label>
+          <label for="maxLevel" class="control-label">max level</label>
           <input id="maxLevel" type="number" class="form-control maxLevel" value="3" min="1">
         </div>
         <div class="form-group">
-          <label for="commitMessage">commit message</label>
+          <label for="commitMessage" class="control-label">commit message</label>
           <input id="commitMessage" type="text" class="form-control commitMessage" value="Update." autocomplete="on">
         </div>
       </form>

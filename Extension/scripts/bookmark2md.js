@@ -1,7 +1,7 @@
 /**
  * Created by OXOYO on 2017/10/13.
  */
-var bookmark2md = {}
+let bookmark2md = {}
 
 const lineBreak = '\n\n'
 
