@@ -5,9 +5,12 @@
 
 ## Use script
 ```bash
-  cd bookmark2md
-  npm i
-  npm run start
+  // step 1
+  cd Script
+  // step 2
+  export chrome bookmarks to `/Script/bookmarks.html`
+  // step 3
+  node bookmark2md.js
 ```
 
 
