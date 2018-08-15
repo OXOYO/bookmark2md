@@ -1,6 +1,6 @@
 # bookmark2md
 
-    A script for converting Chrome bookmarks to Markdown files
+    Convert chrome bookmarks to md files and push them to GitHub repository.
 
 
 ## Use script
