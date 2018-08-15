@@ -245,6 +245,8 @@ function init () {
   });
 
   checkAuthorized()
+
+  utils.lang()
 }
 
 $(function () {

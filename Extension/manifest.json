@@ -15,15 +15,7 @@
     "default_popup": "html/options.html"
   },
   "author": "OXOYO",
-  // 权限申请
   "permissions": [
-    {
-      "fileSystem": [
-        "write",
-        "retainEntries",
-        "directory"
-      ]
-    },
     "bookmarks",
     "notifications",
     "tabs",
@@ -40,15 +32,11 @@
       "run_at": "document_start"
     }
   ],
-  // 选项页 Chrome < 40
   "options_page": "html/options.html",
-  // 选项页 Chrome > 40
   "options_ui": {
     "page": "html/options.html",
-    // 添加一些默认的样式，推荐使用
     "chrome_style": false
   },
-  // 默认语言
   "default_locale": "zh_CN",
   "web_accessible_resources": [
     "lib/oauth2/oauth2.html"

@@ -1,23 +1,17 @@
 {
 	"description": {
-		"message": "A plugin for converting Chrome bookmarks to Markdown files"
+		"message": "Convert chrome bookmarks to md files and push them to GitHub repository."
 	},
 	"popup_title": {
 		"message": "Bookmark2md"
 	},
-	"popup_menu_item_export": {
-		"message": "Export"
+	"logout": {
+		"message": "Logout"
 	},
-	"export_title": {
-		"message": "Options"
+	"refresh": {
+		"message": "Refresh"
 	},
-	"export_config_unless_label": {
-		"message": "unless"
-	},
-	"export_config_unless_placeholder": {
-		"message": "Please enter directory name, please use commas for multiple directories"
-	},
-	"export_submit": {
-		"message": "EXPORT"
+	"exclusion_placeholder": {
+		"message": "Please enter the name of the excluded bookmark directory. Multiple directories should be separated by commas."
 	}
 }

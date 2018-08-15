@@ -1,23 +1,17 @@
 {
 	"description": {
-		"message": "一个将Chrome书签按目录导出为Markdown文件的插件"
+		"message": "将chrome书签转为md文件，并推送到GitHub仓库"
 	},
 	"popup_title": {
 		"message": "Bookmark2md"
 	},
-	"popup_menu_item_export": {
-		"message": "导出"
+	"logout": {
+		"message": "退出"
 	},
-	"export_title": {
-		"message": "配置"
+	"refresh": {
+		"message": "刷新"
 	},
-	"export_config_unless_label": {
-		"message": "排除目录"
-	},
-	"export_config_unless_placeholder": {
-		"message": "请输入目录名，多个目录请用英文逗号分割"
-	},
-	"export_submit": {
-		"message": "导出"
+	"exclusion_placeholder": {
+		"message": "请输入排除的书签目录名称，多个目录请用英文逗号分隔"
 	}
 }
