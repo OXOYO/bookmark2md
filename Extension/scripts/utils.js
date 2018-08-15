@@ -11,7 +11,7 @@ var utils = {
             var langValArr = langVal.split('-')
             var langType = langValArr[0]
             var langKey = langValArr[1]
-            console.log('langKey', $el, langKey)
+            // console.log('langKey', $el, langKey)
             if (langKey) {
                 var langText = chrome.i18n.getMessage(langKey)
                 switch (langType) {
