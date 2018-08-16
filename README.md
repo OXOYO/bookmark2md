@@ -17,6 +17,7 @@
 ## Use Chrome Extension
 
 ### Preview
- ![sign in](docs/img/img_001.png)
 
- ![transfer and push](docs/img/img_002.png)
+ ![sign in](docs/img/img_001_640x400.png)
+
+ ![transfer and push](docs/img/img_002_640x400.png)
