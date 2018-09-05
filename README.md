@@ -2,6 +2,7 @@
 
     Convert chrome bookmarks to md files and push them to GitHub repository.
 
+English | [简体中文](./README_CN.md)
 
 ## Use script
 ```bash
@@ -14,7 +15,7 @@
 ```
 
 
-## Use Chrome Extension
+## Chrome Extension
 
 ### Install
 
