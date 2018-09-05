@@ -14,6 +14,8 @@ let pushCount = {
   error: 0
 }
 
+let allRepoList = []
+
 function authorize() {
   Bookmark2Github.authorize(checkAuthorized)
 }
@@ -51,6 +53,7 @@ function getUserInfo () {
       $('#user-avatar').attr('src', res.avatar_url)
       $('#user-name').html(res.login)
       $('#user-name').attr('href', res.html_url)
+      allRepoList = []
       getUserRepos(res)
     },
     error: function (jqXHR) {
@@ -74,11 +77,18 @@ function getUserRepos (userInfo, page = 1) {
       Bookmark2Github.userRepos = res
       let repoList = []
       res.map(item => {
+        allRepoList.push(item.name)
         repoList.push(`<option value="${ item.name }">${ item.name }</option>`)
       })
-      $('#repo-list').append(repoList.join(''))
       if (repoList.length) {
+        $('#repo-list').append(repoList.join(''))
         getUserRepos(userInfo, page + 1)
+      } else {
+        let repo = localStorage.getItem('repo')
+        if (repo && allRepoList.includes(repo)) {
+          $('#repo-list').val(repo)
+        }
+        getRepoBranches($('#repo-list').val())
       }
     },
     error: function (jqXHR) {
@@ -89,6 +99,9 @@ function getUserRepos (userInfo, page = 1) {
 }
 
 function getRepoBranches(repo) {
+  if (!repo) {
+    return
+  }
   let owner = Bookmark2Github.userInfo.login
   let url = `https://api.github.com/repos/${ owner }/${ repo }/branches`
   showLoading('Loading repo branches...')
@@ -113,90 +126,115 @@ function getRepoBranches(repo) {
   })
 }
 
-function getContent (fileName, fileContent, callback) {
+function getContent (fileName) {
   let owner = Bookmark2Github.userInfo.login
   let repo = $('#repo-list').val()
   let path = fileName + '.md'
   let url = `https://api.github.com/repos/${ owner }/${ repo }/contents/${ path }`
-  $.ajax({
-    type: 'GET',
-    url: url,
-    contentType: 'application/json',
-    headers: {
-      Authorization: `token ${Bookmark2Github.access_token}`
-    },
-    dataType: 'json',
-    success: function(res){
-      callback(fileName, fileContent, res.sha || null)
-    },
-    error: function (jqXHR) {
-      if (jqXHR.status === 404) {
-        callback(fileName, fileContent, null)
-      } else {
-        hideLoading()
+  return new Promise(function (resolve, reject) {
+    $.ajax({
+      type: 'GET',
+      url: url,
+      contentType: 'application/json',
+      headers: {
+        Authorization: `token ${Bookmark2Github.access_token}`
+      },
+      dataType: 'json',
+      success: function(res){
+        resolve(res.sha || null)
+      },
+      error: function (err) {
+        resolve(null)
+        if (err && err.status === 404) {
+          let message = `Not Found ${ fileName }.md`
+          showNotice(message, 'error')
+        }
       }
-      // showNotice(jqXHR.responseJSON.message || jqXHR.responseText, 'error')
-    }
+    })
   })
 }
 
-function putContent (fileName, fileContent, sha) {
-  let owner = Bookmark2Github.userInfo.login
-  let repo = $('#repo-list').val()
-  let branch = $('#branch-list').val() || 'master'
-  let msg = $('#commitMessage').val()
-  let path = fileName + '.md'
-  let url = `https://api.github.com/repos/${ owner }/${ repo }/contents/${ path }`
-  let data = {
-    message: msg,
-    committer: {
-      name: Bookmark2Github.userInfo.name,
-      email: Bookmark2Github.userInfo.email
-    },
-    branch: branch,
-    content: Base64.encode(fileContent)
-  }
-  if (sha) {
-    data['sha'] = sha
-  }
-  showLoading('push to github...')
-  $.ajax({
-    type: 'PUT',
-    url: url,
-    contentType: 'application/json',
-    headers: {
-      Authorization: `token ${Bookmark2Github.access_token}`
-    },
-    dataType: 'json',
-    data: JSON.stringify(data),
-    success: function(res){
-      pushCount.success++
-      hideLoading()
-      // showNotice(`push ${ path } success`, 'success')
-      showNotice(`push total ${ pushCount.total }, success: ${ pushCount.success }, fail: ${ pushCount.error }`, 'info')
-    },
-    error: function (jqXHR) {
-      pushCount.error++
-      hideLoading()
-      // showNotice(jqXHR.responseJSON.message || jqXHR.responseText, 'error')
-      showNotice(`push total ${ pushCount.total }, success: ${ pushCount.success }, fail: ${ pushCount.error }`, 'info')
+function putContent (fileName, fileContent) {
+  return getContent(fileName).then(function (sha) {
+    let owner = Bookmark2Github.userInfo.login
+    let repo = $('#repo-list').val()
+    let branch = $('#branch-list').val() || 'master'
+    let msg = $('#commitMessage').val()
+    let path = fileName + '.md'
+    let url = `https://api.github.com/repos/${ owner }/${ repo }/contents/${ path }`
+    let data = {
+      message: msg,
+      committer: {
+        name: Bookmark2Github.userInfo.name,
+        email: Bookmark2Github.userInfo.email
+      },
+      branch: branch,
+      content: Base64.encode(fileContent)
     }
+    if (sha) {
+      data['sha'] = sha
+    }
+    showLoading('push to github...')
+    return new Promise(function (resolve, reject) {
+      $.ajax({
+        type: 'PUT',
+        url: url,
+        contentType: 'application/json',
+        headers: {
+          Authorization: `token ${Bookmark2Github.access_token}`
+        },
+        dataType: 'json',
+        data: JSON.stringify(data),
+        success: function(res){
+          resolve(res)
+        },
+        error: function (err) {
+          reject(err)
+        }
+      })
+    })
   })
 }
 
 function doPush () {
   showLoading('transfer bookmarks...')
-  let exclusion = $('#exclusion').val().trim()
-  let maxLevel = parseInt($('#maxLevel').val()) || 0
-  pushCount = {
-    total: 0,
-    success: 0,
-    error: 0
-  }
-  bookmark2md.transfer(exclusion, maxLevel, function (fileName, fileContent) {
-    pushCount.total++
-    getContent(fileName, fileContent, putContent)
-  })
+  setTimeout(function () {
+    let exclusion = $('#exclusion').val().trim()
+    let maxLevel = parseInt($('#maxLevel').val()) || 0
+    pushCount = {
+      total: 0,
+      success: 0,
+      error: 0
+    }
+    bookmark2md.transfer(exclusion, maxLevel, function (fileMap) {
+      let fileNameArr = Object.keys(fileMap)
+      let i = 0
+      pushCount.total = fileNameArr.length
+      let handler = function () {
+        putContent(fileNameArr[i], fileMap[fileNameArr[i]]).then(function () {
+          pushCount.success++
+          showNotice(`push total ${ pushCount.total }, success: ${ pushCount.success }, fail: ${ pushCount.error }`, 'info')
+          next()
+        }).catch(function (err) {
+          pushCount.error++
+          showNotice(`push total ${ pushCount.total }, success: ${ pushCount.success }, fail: ${ pushCount.error }`, 'info')
+          next()
+          console.log('push err', err)
+        })
+      }
+      let next = function () {
+        i = i + 1
+        setTimeout(function () {
+          if (pushCount.success + pushCount.error < pushCount.total) {
+            handler()
+          } else {
+            hideLoading()
+          }
+        }, 200)
+      }
+      handler()
+    })
+  }, 0)
 }
 
 function showLoading (msg) {
@@ -241,8 +279,32 @@ function init () {
   })
   $('#refresh').click(checkAuthorized)
   $('#repo-list').change(function (event) {
-    getRepoBranches($(event.target).val() || '')
+    let val = $(event.target).val().trim()
+    getRepoBranches(val)
+    localStorage.setItem('repo', val)
   });
+  $('#exclusion').change(function (event) {
+    let val = $(event.target).val().trim()
+    localStorage.setItem('exclusion', val)
+  })
+  $('#maxLevel').change(function (event) {
+    let val = $(event.target).val()
+    localStorage.setItem('maxLevel', val)
+  })
+  $('#commitMessage').change(function (event) {
+    let val = $(event.target).val()
+    localStorage.setItem('commitMessage', val)
+  })
+
+  if (localStorage.getItem('exclusion')) {
+    $('#exclusion').val(localStorage.getItem('exclusion'))
+  }
+  if (localStorage.getItem('maxLevel')) {
+    $('#maxLevel').val(localStorage.getItem('maxLevel'))
+  }
+  if (localStorage.getItem('commitMessage')) {
+    $('#commitMessage').val(localStorage.getItem('commitMessage'))
+  }
 
   checkAuthorized()
 

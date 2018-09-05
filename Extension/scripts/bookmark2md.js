@@ -145,6 +145,7 @@ bookmark2md.transfer = function (exclusion, maxLevel, callback) {
     }
     handler(bookmarks, [rootID], rootTitle, level)
 
+    let fileMap = {}
     Object.keys(dirMap).map(dirId => {
       let item = dirMap[dirId]
       if (item.level <= maxLevel) {
@@ -153,9 +154,10 @@ bookmark2md.transfer = function (exclusion, maxLevel, callback) {
           if (item.content && item.content instanceof Array) {
             file = item.content.join('')
           }
-          callback(item.title, file)
+          fileMap[item.title] = file
         }
       }
     })
+    callback(fileMap)
   })
 }
