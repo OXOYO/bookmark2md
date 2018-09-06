@@ -1,6 +1,6 @@
 {
 	"description": {
-		"message": "将chrome书签转为md文件，并推送到GitHub仓库"
+		"message": "将chrome书签转为markdown文件，并推送到GitHub仓库。"
 	},
 	"popup_title": {
 		"message": "Bookmark2md"

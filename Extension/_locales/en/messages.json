@@ -1,6 +1,6 @@
 {
 	"description": {
-		"message": "Convert chrome bookmarks to md files and push them to GitHub repository."
+		"message": "Convert chrome bookmarks to markdown files and push them to GitHub repository."
 	},
 	"popup_title": {
 		"message": "Bookmark2md"
