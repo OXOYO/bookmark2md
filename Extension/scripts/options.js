@@ -230,7 +230,7 @@ function doPush () {
           } else {
             hideLoading()
           }
-        }, 200)
+        }, 1000)
       }
       handler()
     })
