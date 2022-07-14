@@ -1,6 +1,8 @@
 # bookmark2md
 
     Convert chrome bookmarks to md files and push them to GitHub repository.
+    
+![Chrome Web Store](https://img.shields.io/chrome-web-store/rating/gbclgdopkgkofbmioamakhnlogeajmll)
 
 English | [简体中文](./README_CN.md)
 
