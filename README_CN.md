@@ -1,6 +1,7 @@
 # bookmark2md
 
     将chrome书签转换为md文件并将它们推送到GitHub存储库。
+![Chrome Web Store](https://img.shields.io/chrome-web-store/rating/gbclgdopkgkofbmioamakhnlogeajmll)
 
 [English](./README.md) | 简体中文
 
