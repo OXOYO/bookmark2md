@@ -5,7 +5,7 @@
 let Bookmark2Github = new OAuth2('github', {
   client_id: '004b7c9e59a81dfae785',
   client_secret: 'afc402eef1fb5a2788dffee8477d0964511a524b',
-  api_scope: 'repo%20user'
+  api_scope: 'repo'
 })
 
 let pushCount = {
