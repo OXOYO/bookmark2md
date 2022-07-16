@@ -5,7 +5,7 @@
 let Bookmark2Github = new OAuth2('github', {
   client_id: '004b7c9e59a81dfae785',
   client_secret: 'afc402eef1fb5a2788dffee8477d0964511a524b',
-  api_scope: 'repo'
+  api_scope: 'repo%20user'
 })
 
 let pushCount = {
@@ -64,19 +64,19 @@ function getUserInfo () {
 }
 
 function getUserRepos (userInfo, page = 1) {
-  let url = `${ userInfo.repos_url }?per_page=100&page=${ page }`
+  let url = `https://api.github.com/search/repositories?q=user:${ userInfo.login }&per_page=100&page=${ page }`
   showLoading('Loading user repos...')
   $.ajax({
     type: 'GET',
     url: url,
     headers: {
-      Authorization: `token ${Bookmark2Github.access_token}`
+      Authorization: `token ${Bookmark2Github.access_token}`,
     },
     success: function (res) {
       hideLoading()
       Bookmark2Github.userRepos = res
       let repoList = []
-      res.map(item => {
+      res.items.map(item => {
         allRepoList.push(item.name)
         repoList.push(`<option value="${ item.name }">${ item.name }</option>`)
       })
@@ -164,10 +164,6 @@ function putContent (fileName, fileContent) {
     let url = `https://api.github.com/repos/${ owner }/${ repo }/contents/${ path }`
     let data = {
       message: msg,
-      committer: {
-        name: Bookmark2Github.userInfo.name,
-        email: Bookmark2Github.userInfo.email
-      },
       branch: branch,
       content: Base64.encode(fileContent)
     }
@@ -208,6 +204,7 @@ function doPush () {
     }
     bookmark2md.transfer(exclusion, maxLevel, function (fileMap) {
       let fileNameArr = Object.keys(fileMap)
+      console.log(fileMap)
       let i = 0
       pushCount.total = fileNameArr.length
       let handler = function () {
